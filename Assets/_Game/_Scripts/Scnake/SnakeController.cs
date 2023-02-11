@@ -68,7 +68,7 @@ namespace SnakeGame
             {
                 case "Wall":
                 case "Snake":
-                    Debug.LogError($"GAME_OVER");
+                    Debug.LogError($"GAME_OVER"); 
                     GlobalEventHandler.TriggerEvent(EventID.EVENT_COLLIDED_TO_OBSTACLE);
                     break;
             }
