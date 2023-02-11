@@ -15,10 +15,6 @@ namespace SnakeGame
         private void Awake()
         {
             m_controlHub = new ControlHub();
-            for (int i = 0, count = m_controlHub.controlSchemes.Count; i < count; i++)
-            {
-                Debug.Log($"+++ {m_controlHub.controlSchemes[i]} {JsonUtility.ToJson(m_controlHub.controlSchemes[i])}");
-            }
         }
         private void OnEnable()
         {
