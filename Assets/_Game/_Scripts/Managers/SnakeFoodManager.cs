@@ -22,12 +22,9 @@ namespace SnakeGame
         #endregion Variables
 
         #region Unity Methods
-        private void Awake()
-        {
-            _Init();
-        }
         private void Start()
         {
+            _Init();
             _SpawnFoodItem();
         }
         private void OnEnable()
