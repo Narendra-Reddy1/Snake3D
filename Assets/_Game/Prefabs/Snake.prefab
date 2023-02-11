@@ -11,9 +11,10 @@ GameObject:
   - component: {fileID: 256101595495173523}
   - component: {fileID: 1821192560}
   - component: {fileID: 1821192559}
+  - component: {fileID: 1821192561}
   m_Layer: 0
   m_Name: Snake
-  m_TagString: Untagged
+  m_TagString: SnakeHead
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -47,8 +48,8 @@ BoxCollider:
   m_IsTrigger: 1
   m_Enabled: 1
   serializedVersion: 2
-  m_Size: {x: 0.71123683, y: 0.721388, z: 0.7169661}
-  m_Center: {x: -0.0009601712, y: -0.0016138554, z: -0.0038247406}
+  m_Size: {x: 0.6, y: 0.6, z: 0.6}
+  m_Center: {x: 0, y: 0, z: 0}
 --- !u!54 &1821192559
 Rigidbody:
   m_ObjectHideFlags: 0
@@ -65,6 +66,30 @@ Rigidbody:
   m_Interpolate: 0
   m_Constraints: 0
   m_CollisionDetection: 0
+--- !u!114 &1821192561
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 256101595495173520}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e3a2a033b5842d42bde4d760449ab44, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  direction: 0
+  snakeNodes:
+  - {fileID: 256101594122931456}
+  - {fileID: 8079247928897525826}
+  - {fileID: 646919310943933964}
+  step_Length: 0.65
+  movementFrequency: 0.1
+  canMove: 0
+  counter: 0
+  snakeNodePrefab: {fileID: 2381176447476436901, guid: f431a4090f5257642940b7be7c45d503, type: 3}
+  mainRigidbody: {fileID: 1821192559}
+  headRigidbody: {fileID: 256101594122931456}
 --- !u!1001 &256101594547560407
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -132,11 +157,32 @@ PrefabInstance:
       propertyPath: m_Name
       value: Snake_Node
       objectReference: {fileID: 0}
+    - target: {fileID: 2381176447476436901, guid: f431a4090f5257642940b7be7c45d503, type: 3}
+      propertyPath: m_TagString
+      value: Untagged
+      objectReference: {fileID: 0}
+    - target: {fileID: 3035952871387351202, guid: f431a4090f5257642940b7be7c45d503, type: 3}
+      propertyPath: m_Size.x
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3035952871387351202, guid: f431a4090f5257642940b7be7c45d503, type: 3}
+      propertyPath: m_Size.y
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 3035952871387351202, guid: f431a4090f5257642940b7be7c45d503, type: 3}
+      propertyPath: m_Size.z
+      value: 0.9
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f431a4090f5257642940b7be7c45d503, type: 3}
 --- !u!4 &2571304083928186590 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 2315624797186810121, guid: f431a4090f5257642940b7be7c45d503, type: 3}
+  m_PrefabInstance: {fileID: 256101594547560407}
+  m_PrefabAsset: {fileID: 0}
+--- !u!54 &8079247928897525826 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 8327888143044069269, guid: f431a4090f5257642940b7be7c45d503, type: 3}
   m_PrefabInstance: {fileID: 256101594547560407}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &8548757953180072516
@@ -150,10 +196,30 @@ PrefabInstance:
       propertyPath: m_Name
       value: Tail
       objectReference: {fileID: 0}
+    - target: {fileID: 9104338629415709762, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
+      propertyPath: m_TagString
+      value: Snake
+      objectReference: {fileID: 0}
     - target: {fileID: 9104338629415709772, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
       propertyPath: m_Materials.Array.data[0]
       value: 
       objectReference: {fileID: 2100000, guid: 0ff4f71663e9469469064e9d5783c572, type: 2}
+    - target: {fileID: 9104338629415709773, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
+      propertyPath: m_Size.x
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 9104338629415709773, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
+      propertyPath: m_Size.y
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 9104338629415709773, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
+      propertyPath: m_Size.z
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 9104338629415709773, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
+      propertyPath: m_Enabled
+      value: 1
+      objectReference: {fileID: 0}
     - target: {fileID: 9104338629415709774, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
       propertyPath: m_RootOrder
       value: 2
@@ -215,6 +281,11 @@ PrefabInstance:
 --- !u!4 &646919310943933962 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 9104338629415709774, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
+  m_PrefabInstance: {fileID: 8548757953180072516}
+  m_PrefabAsset: {fileID: 0}
+--- !u!54 &646919310943933964 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 9104338629415709768, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
   m_PrefabInstance: {fileID: 8548757953180072516}
   m_PrefabAsset: {fileID: 0}
 --- !u!1001 &9203442242114913502
@@ -285,6 +356,18 @@ PrefabInstance:
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8950036736403982811, guid: 2b2552482c9c96344994201e5fd0be79, type: 3}
+      propertyPath: m_Size.x
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950036736403982811, guid: 2b2552482c9c96344994201e5fd0be79, type: 3}
+      propertyPath: m_Size.y
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950036736403982811, guid: 2b2552482c9c96344994201e5fd0be79, type: 3}
+      propertyPath: m_Size.z
+      value: 0.9
+      objectReference: {fileID: 0}
+    - target: {fileID: 8950036736403982811, guid: 2b2552482c9c96344994201e5fd0be79, type: 3}
       propertyPath: m_Enabled
       value: 0
       objectReference: {fileID: 0}
@@ -295,6 +378,11 @@ PrefabInstance:
     m_RemovedComponents:
     - {fileID: 844519554069324629, guid: 2b2552482c9c96344994201e5fd0be79, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 2b2552482c9c96344994201e5fd0be79, type: 3}
+--- !u!54 &256101594122931456 stripped
+Rigidbody:
+  m_CorrespondingSourceObject: {fileID: 8950036736403982814, guid: 2b2552482c9c96344994201e5fd0be79, type: 3}
+  m_PrefabInstance: {fileID: 9203442242114913502}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &256101594122931462 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 8950036736403982808, guid: 2b2552482c9c96344994201e5fd0be79, type: 3}
