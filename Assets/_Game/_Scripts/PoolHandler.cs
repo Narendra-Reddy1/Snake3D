@@ -36,7 +36,7 @@ public class PoolHandler : MonoBehaviour
     /// <param name="name"></param>
     /// <param name="size"></param>
     /// <param name="template"></param>
-    public void CreatePool(string name, int size, GameObject template)
+    public void CreatePool(string name, byte size, GameObject template)
     {
         List<GameObject> pool = new List<GameObject>();
         GameObject currentObject;
@@ -51,7 +51,7 @@ public class PoolHandler : MonoBehaviour
     }
 
 
-    public void CreatePool(string name, int size, GameObject template, Transform parent, bool worldPositionStays = true)
+    public void CreatePool(string name, byte size, GameObject template, Transform parent, bool worldPositionStays = true)
     {
         List<GameObject> pool = new List<GameObject>();
         GameObject currentObject;

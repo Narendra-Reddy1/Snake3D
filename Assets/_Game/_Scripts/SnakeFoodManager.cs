@@ -19,7 +19,6 @@ namespace SnakeGame
         private bool isStaticFoodItem = true;
         private bool isFoodSpawned = false;
         private const string kStaticFoodPool = "staticFoodPool";
-        private const string kDynamicFoodPool = "dynamicFoodPool";
         #endregion Variables
 
         #region Unity Methods
@@ -52,8 +51,6 @@ namespace SnakeGame
         private void _Init()
         {
             PoolHandler.instance.CreatePool(kStaticFoodPool, 3, m_foodPrefab, transform);
-            PoolHandler.instance.CreatePool(kDynamicFoodPool, 3, m_foodPrefab, transform);
-            Debug.Log($"Created pools");
         }
         private void _SpawnFoodItem()
         {
@@ -63,12 +60,10 @@ namespace SnakeGame
             isFoodSpawned = food != null;
             //yield return new WaitForSeconds(0.25f);
             food.SetActive(true);
-            Debug.Log($"!!!old is static: {isStaticFoodItem}");
             if (!isStaticFoodItem)
             {
                 TweenFoodItem(food.transform);
             }
-            Debug.Log($"!!!Food Item spawnned: {food != null} is static: {isStaticFoodItem}");
         }
         private void TweenFoodItem(Transform foodItem)
         {
@@ -119,7 +114,6 @@ namespace SnakeGame
             isFoodSpawned = false;
             isStaticFoodItem = !isStaticFoodItem;
             _SpawnFoodItem();
-            Debug.Log($"!!! CAlbback on food collected");
         }
         #endregion Callbacks
     }

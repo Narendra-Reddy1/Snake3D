@@ -12,27 +12,27 @@ namespace SnakeGame
 
         #region Variables
 
-        [SerializeField]
-        private MoveDirection direction;
+        [SerializeField] private MoveDirection direction;
+        [SerializeField] private List<Rigidbody> snakeNodes;
+        [SerializeField] private GameObject snakeNodePrefab;
+        [SerializeField] private float step_Length = 0.2f;
+        [SerializeField] private float movementFrequency = 0.1f;
+        [SerializeField] private bool canMove = false;
+        [SerializeField] private Rigidbody mainRigidbody;
+        [SerializeField] private Rigidbody headRigidbody;
+
         private Transform m_transform;
-        public List<Rigidbody> snakeNodes;
-        public float step_Length = 0.2f;
-        public float movementFrequency = 0.1f;
-        public bool canMove = false;
-        public float counter = 0;
-
-        public GameObject snakeNodePrefab;
-        public Rigidbody mainRigidbody;
-        public Rigidbody headRigidbody;
-        private bool canCreateNewNodeAtrTail = false;
-
-        private List<GameObject> snakeNodesPool;
         private List<Vector3> deltaPositions;
+        private bool isSnakeCollectedFood = false;
+        private bool canCreateNewNodeAtrTail = false;
+        private float counter = 0;
 
+        private const byte sizeOfTheSnakeNodesPool = 25;
+        private const string kSnakeNodesPool = "snakenodespool";
         #endregion Variables
 
         #region Unity Methods
-        private void Awake()
+        private void Start()
         {
             _Init();
             InitSnake();
@@ -40,10 +40,13 @@ namespace SnakeGame
         private void OnEnable()
         {
             GlobalEventHandler.AddListener(EventID.EVENT_ON_SWIPE_DETECTED, Callback_On_Swipe_Detected);
+            GlobalEventHandler.AddListener(EventID.EVENT_FOOD_COLLECTED, Callback_On_Snake_Collected_Food_Item);
         }
         private void OnDisable()
         {
             GlobalEventHandler.RemoveListener(EventID.EVENT_ON_SWIPE_DETECTED, Callback_On_Swipe_Detected);
+            GlobalEventHandler.RemoveListener(EventID.EVENT_FOOD_COLLECTED, Callback_On_Snake_Collected_Food_Item);
+
         }
         private void Update()
         {
@@ -59,22 +62,17 @@ namespace SnakeGame
 
         }
 
-        //private void OnTriggerEnter(Collider other)
-        //{
-        //    switch (other.tag)
-        //    {
-        //        case "Wall":
-        //        case "Snake":
-        //            Debug.LogError($"GAME_OVER");
-        //            GlobalEventHandler.TriggerEvent(EventID.EVENT_COLLIDED_TO_OBSTACLE);
-        //            break;
-        //        case "Food":
-        //            other.gameObject.SetActive(false);
-        //            GlobalEventHandler.TriggerEvent(EventID.EVENT_FOOD_COLLECTED);
-        //            Debug.Log($"!!!Food Collected..");
-        //            break;
-        //    }
-        //}
+        private void OnTriggerEnter(Collider other)
+        {
+            switch (other.tag)
+            {
+                case "Wall":
+                case "Snake":
+                    Debug.LogError($"GAME_OVER");
+                    GlobalEventHandler.TriggerEvent(EventID.EVENT_COLLIDED_TO_OBSTACLE);
+                    break;
+            }
+        }
         #endregion Unity Methods
 
         #region Public Methods
@@ -85,6 +83,7 @@ namespace SnakeGame
         private void _Init()
         {
             m_transform = transform;
+            PoolHandler.instance.CreatePool(kSnakeNodesPool, sizeOfTheSnakeNodesPool, snakeNodePrefab);
             deltaPositions = new List<Vector3>
             {
                 new Vector3(0f,0f,step_Length),
@@ -149,6 +148,15 @@ namespace SnakeGame
             counter = 0;
             canMove = true;
         }
+        private void OnFoodCollected()
+        {
+            GameObject snakeNode = PoolHandler.instance.SpawnElementFromPool(kSnakeNodesPool, snakeNodePrefab.name);
+            snakeNode.transform.position = snakeNodes[snakeNodes.Count - 1].position;
+            snakeNode.transform.SetParent(transform, true);
+            snakeNode.SetActive(true);
+            snakeNodes.Add(snakeNode.GetComponent<Rigidbody>());
+            Debug.Log($"Added Node to the snake...");
+        }
         private void MoveSnake()
         {
             Vector3 deltaPosition = deltaPositions[(int)direction];
@@ -163,6 +171,11 @@ namespace SnakeGame
                 parentpostion = prevPosition;
             }
             //SnakeGrowing Logic here
+            if (isSnakeCollectedFood)
+            {
+                isSnakeCollectedFood = false;
+                OnFoodCollected();
+            }
         }
         private bool IsDirectionIsValid(MoveDirection newDirection)
         {
@@ -187,6 +200,10 @@ namespace SnakeGame
         {
             Vector2 input = (Vector2)args;
             SetDirectionBasedOnSwipeDirection(input);
+        }
+        private void Callback_On_Snake_Collected_Food_Item(object args)
+        {
+            isSnakeCollectedFood = true;
         }
         #endregion Callbacks
 

@@ -1326,8 +1326,12 @@ PrefabInstance:
       value: 3
       objectReference: {fileID: 0}
     - target: {fileID: 1821192561, guid: 99feaa8f5f152f64f80088bbe66485e6, type: 3}
+      propertyPath: step_Length
+      value: 0.7
+      objectReference: {fileID: 0}
+    - target: {fileID: 1821192561, guid: 99feaa8f5f152f64f80088bbe66485e6, type: 3}
       propertyPath: movementFrequency
-      value: 0.2
+      value: 0.1
       objectReference: {fileID: 0}
     - target: {fileID: 256101594122931456, guid: 99feaa8f5f152f64f80088bbe66485e6, type: 3}
       propertyPath: m_UseGravity
@@ -1383,11 +1387,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 646919310943933961, guid: 99feaa8f5f152f64f80088bbe66485e6, type: 3}
       propertyPath: m_Enabled
-      value: 0
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 646919310943933964, guid: 99feaa8f5f152f64f80088bbe66485e6, type: 3}
       propertyPath: m_UseGravity
       value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3002779476384143221, guid: 99feaa8f5f152f64f80088bbe66485e6, type: 3}
+      propertyPath: m_Enabled
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 8079247928897525826, guid: 99feaa8f5f152f64f80088bbe66485e6, type: 3}
       propertyPath: m_UseGravity
@@ -1395,6 +1403,4 @@ PrefabInstance:
       objectReference: {fileID: 0}
     m_RemovedComponents:
     - {fileID: 256101594122931461, guid: 99feaa8f5f152f64f80088bbe66485e6, type: 3}
-    - {fileID: 3002779476384143221, guid: 99feaa8f5f152f64f80088bbe66485e6, type: 3}
-    - {fileID: 646919310943933961, guid: 99feaa8f5f152f64f80088bbe66485e6, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 99feaa8f5f152f64f80088bbe66485e6, type: 3}
