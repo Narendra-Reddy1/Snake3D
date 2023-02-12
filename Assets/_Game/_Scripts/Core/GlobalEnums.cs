@@ -8,5 +8,10 @@ namespace SnakeGame.Enums
         LEFT = 2,
         RIGHT = 3,
     }
+    public enum GameMode
+    {
+        SinglePlayer = 0,
+        MultiPlayer = 1,
+    }
 
 }

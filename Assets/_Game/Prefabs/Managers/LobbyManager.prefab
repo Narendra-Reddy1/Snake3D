@@ -44,3 +44,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 247c1ddb97fe67740a1740a7663cf769, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  m_roomIdInputField: {fileID: 0}
+  m_gameModeSelectionPanel: {fileID: 0}
+  m_roomCreateOrJoinPanel: {fileID: 0}
+  m_waitingForOtherPlayersPanel: {fileID: 0}

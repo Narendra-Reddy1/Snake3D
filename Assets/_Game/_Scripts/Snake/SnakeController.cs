@@ -8,11 +8,9 @@ namespace SnakeGame
 {
     public class SnakeController : MonoBehaviour
     {
-
-
         #region Variables
 
-        [SerializeField] private MoveDirection direction;
+        [SerializeField] private MoveDirection m_direction;
         [SerializeField] private List<Rigidbody> snakeNodes;
         [SerializeField] private GameObject snakeNodePrefab;
         [SerializeField] private float step_Length = 0.2f;
@@ -20,6 +18,7 @@ namespace SnakeGame
         [SerializeField] private bool canMove = false;
         [SerializeField] private Rigidbody mainRigidbody;
         [SerializeField] private Rigidbody headRigidbody;
+        [SerializeField] private Photon.Pun.PhotonView photonView;
 
         private Transform m_transform;
         private List<Vector3> deltaPositions;
@@ -34,8 +33,11 @@ namespace SnakeGame
         #region Unity Methods
         private void Start()
         {
-            _Init();
-            InitSnake();
+            if (photonView.IsMine)
+            {
+                _Init();
+                InitSnake();
+            }
         }
         private void OnEnable()
         {
@@ -46,20 +48,20 @@ namespace SnakeGame
         {
             GlobalEventHandler.RemoveListener(EventID.EVENT_ON_SWIPE_DETECTED, Callback_On_Swipe_Detected);
             GlobalEventHandler.RemoveListener(EventID.EVENT_FOOD_COLLECTED, Callback_On_Snake_Collected_Food_Item);
-
         }
         private void Update()
         {
-            CheckForFrequencyToMove();
+            if (photonView.IsMine)
+                CheckForFrequencyToMove();
         }
         private void FixedUpdate()
         {
+            if (!photonView.IsMine) return;
             if (canMove)
             {
                 canMove = false;
                 MoveSnake();
             }
-
         }
 
         private void OnTriggerEnter(Collider other)
@@ -68,7 +70,7 @@ namespace SnakeGame
             {
                 case "Wall":
                 case "Snake":
-                    Debug.LogError($"GAME_OVER"); 
+                    Debug.LogError($"GAME_OVER");
                     GlobalEventHandler.TriggerEvent(EventID.EVENT_COLLIDED_TO_OBSTACLE);
                     break;
             }
@@ -83,7 +85,6 @@ namespace SnakeGame
         private void _Init()
         {
             m_transform = transform;
-            PoolHandler.instance.CreatePool(kSnakeNodesPool, sizeOfTheSnakeNodesPool, snakeNodePrefab);
             deltaPositions = new List<Vector3>
             {
                 new Vector3(0f,0f,step_Length),
@@ -91,13 +92,14 @@ namespace SnakeGame
                 new Vector3(-step_Length,0f),
                 new Vector3(step_Length,0f)
             };
+            if (photonView == null) TryGetComponent(out photonView);
             if (snakeNodes == null || snakeNodes.Count <= 0)
                 for (int i = 0, count = m_transform.childCount; i < count; i++)
                     snakeNodes.Add(m_transform.GetChild(i).GetComponent<Rigidbody>());
         }
         private void InitSnake()
         {
-            switch (direction)
+            switch (m_direction)
             {
                 case MoveDirection.DOWN:
                     snakeNodes[1].position = snakeNodes[0].position + new Vector3(0f, 0f, step_Length);
@@ -119,7 +121,7 @@ namespace SnakeGame
         }
         private void SetDirectionBasedOnSwipeDirection(Vector2 swipeVector)
         {
-            MoveDirection dir = direction;
+            MoveDirection dir = m_direction;
 
             if (swipeVector.x > 0)
             {
@@ -139,8 +141,8 @@ namespace SnakeGame
             }
             if (IsDirectionIsValid(dir))
             {
-                Debug.LogError($"curr: {direction} newDir: {dir} ");
-                direction = dir;
+                Debug.LogError($"curr: {m_direction} newDir: {dir} ");
+                m_direction = dir;
             }
         }
         void ForceMove()
@@ -150,8 +152,7 @@ namespace SnakeGame
         }
         private void OnFoodCollected()
         {
-            GameObject snakeNode = PoolHandler.instance.SpawnElementFromPool(kSnakeNodesPool, snakeNodePrefab.name);
-            snakeNode.transform.position = snakeNodes[snakeNodes.Count - 1].position;
+            GameObject snakeNode = Photon.Pun.PhotonNetwork.Instantiate(snakeNodePrefab.name, snakeNodes[snakeNodes.Count - 1].position, Quaternion.identity);
             snakeNode.transform.SetParent(transform, true);
             snakeNode.SetActive(true);
             snakeNodes.Add(snakeNode.GetComponent<Rigidbody>());
@@ -159,7 +160,7 @@ namespace SnakeGame
         }
         private void MoveSnake()
         {
-            Vector3 deltaPosition = deltaPositions[(int)direction];
+            Vector3 deltaPosition = deltaPositions[(int)m_direction];
             Vector3 parentpostion = mainRigidbody.position;
             Vector3 prevPosition;
             mainRigidbody.position += deltaPosition;
@@ -179,10 +180,10 @@ namespace SnakeGame
         }
         private bool IsDirectionIsValid(MoveDirection newDirection)
         {
-            return !((newDirection.Equals(MoveDirection.UP) && direction.Equals(MoveDirection.DOWN)) ||
-                (newDirection.Equals(MoveDirection.DOWN) && direction.Equals(MoveDirection.UP)) ||
-                (newDirection.Equals(MoveDirection.LEFT) && direction.Equals(MoveDirection.RIGHT)) ||
-                (newDirection.Equals(MoveDirection.RIGHT) && direction.Equals(MoveDirection.LEFT)));
+            return !((newDirection.Equals(MoveDirection.UP) && m_direction.Equals(MoveDirection.DOWN)) ||
+                (newDirection.Equals(MoveDirection.DOWN) && m_direction.Equals(MoveDirection.UP)) ||
+                (newDirection.Equals(MoveDirection.LEFT) && m_direction.Equals(MoveDirection.RIGHT)) ||
+                (newDirection.Equals(MoveDirection.RIGHT) && m_direction.Equals(MoveDirection.LEFT)));
         }
         private void CheckForFrequencyToMove()
         {
