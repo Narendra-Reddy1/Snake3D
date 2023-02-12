@@ -41,10 +41,6 @@ public class PhotonNetworkWrapper : MonoBehaviourPunCallbacks
     public override void OnConnectedToMaster()
     {
         Debug.Log($"ConnectedToMaster");
-        //SceneManager.LoadSceneAsync(Constants.LOBBY_SCENE, LoadSceneMode.Additive).completed += (op) =>
-        //{
-        //    SceneManager.SetActiveScene(SceneManager.GetSceneByName(Constants.LOBBY_SCENE));
-        //};
         GlobalEventHandler.TriggerEvent(EventID.EVENT_PHOTON_CONNECTED_TO_MASTER_SERVER);
     }
     public override void OnConnected()
@@ -55,6 +51,7 @@ public class PhotonNetworkWrapper : MonoBehaviourPunCallbacks
     public override void OnJoinedRoom()
     {
         Debug.Log($"Joined Room..");
+        GlobalVariables.currentGameMode = PhotonNetwork.CurrentRoom.MaxPlayers > 1 ? GameMode.MultiPlayer : GameMode.SinglePlayer;
         GlobalEventHandler.TriggerEvent(EventID.EVENT_ON_PLAYER_JOINED_ROOM);
         switch (GlobalVariables.currentGameMode)
         {
@@ -95,6 +92,19 @@ public class PhotonNetworkWrapper : MonoBehaviourPunCallbacks
 
     #region Private Methods
 
+    private void ConnectToPhotonServer()
+    {
+        PhotonNetwork.ConnectUsingSettings();
+    }
+
+    private void CreateRoom(CreateRoomSettings roomSettings)
+    {
+        PhotonNetwork.JoinOrCreateRoom(roomSettings.roomID, roomSettings.roomOptions, TypedLobby.Default);
+    }
+    private void JoinRoom(string roomID)
+    {
+        PhotonNetwork.JoinRoom(roomID);
+    }
     private void CheckForMinimumPlayersToStartGame()
     {
         if (PhotonNetwork.CurrentRoom.PlayerCount >= PhotonNetwork.CurrentRoom.MaxPlayers)
@@ -109,20 +119,6 @@ public class PhotonNetworkWrapper : MonoBehaviourPunCallbacks
             GlobalEventHandler.TriggerEvent(EventID.EVENT_ON_TOGGLE_WAITING_FOR_PLAYERS_PANEL, true);
             //Show waiting for other players popup.....
         }
-    }
-    private void ConnectToPhotonServer()
-    {
-        PhotonNetwork.ConnectUsingSettings();
-    }
-
-    private void CreateRoom(CreateRoomSettings roomSettings)
-    {
-        GlobalVariables.currentGameMode = roomSettings.roomOptions.MaxPlayers > 1 ? GameMode.MultiPlayer : GameMode.SinglePlayer;
-        PhotonNetwork.JoinOrCreateRoom(roomSettings.roomID, roomSettings.roomOptions, TypedLobby.Default);
-    }
-    private void JoinRoom(string roomID)
-    {
-        PhotonNetwork.JoinRoom(roomID);
     }
     #endregion
 
@@ -141,7 +137,6 @@ public class PhotonNetworkWrapper : MonoBehaviourPunCallbacks
     }
     private void Callback_On_Load_Main_Scene_Requested(object args)
     {
-        PhotonNetwork.AutomaticallySyncScene = true;
         PhotonNetwork.LoadLevel(Constants.MAIN_SCENE);
     }
     #endregion Callbacks

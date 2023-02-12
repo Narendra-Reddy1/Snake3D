@@ -1,3 +1,4 @@
+using Photon.Pun;
 using SnakeGame;
 using System.Collections;
 using System.Collections.Generic;
@@ -13,15 +14,20 @@ public class Collectable : MonoBehaviour
 
     #region Unity Methods
 
-    private void OnTriggerEnter(Collider other)
-    {
-        if (other.tag == "SnakeHead")
-        {
-            GlobalEventHandler.TriggerEvent(EventID.EVENT_FOOD_COLLECTED);
-            Debug.Log($"!!!Food Collected..");
-            gameObject.SetActive(false);
-        }
-    }
+    //private void OnTriggerEnter(Collider other)
+    //{
+    //    if (other.tag == "SnakeHead")
+    //    {
+    //        var view = other.GetComponent<PhotonView>();
+    //        if (view.IsMine)
+    //        {
+    //            view.RPC("_OnFoodCollected", RpcTarget.All);
+    //            Debug.Log($"!!!Food Collected..");
+    //        }
+    //        GlobalEventHandler.TriggerEvent(EventID.EVENT_FOOD_COLLECTED);
+    //        gameObject.SetActive(false);
+    //    }
+    //}
 
     #endregion Unity Methods
 

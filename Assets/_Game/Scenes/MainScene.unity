@@ -876,6 +876,14 @@ PrefabInstance:
       propertyPath: m_Name
       value: Gameplay
       objectReference: {fileID: 0}
+    - target: {fileID: 2513116429526094354, guid: dc37132f5e7fbb240806ad50aa6a69ab, type: 3}
+      propertyPath: m_text
+      value: 0
+      objectReference: {fileID: 0}
+    - target: {fileID: 3690507675591050442, guid: dc37132f5e7fbb240806ad50aa6a69ab, type: 3}
+      propertyPath: m_text
+      value: 0
+      objectReference: {fileID: 0}
     - target: {fileID: 4137743592541338694, guid: dc37132f5e7fbb240806ad50aa6a69ab, type: 3}
       propertyPath: sceneViewId
       value: 1

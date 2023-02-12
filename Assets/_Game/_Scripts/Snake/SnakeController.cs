@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using UnityEngine;
 using SnakeGame.Enums;
 using System;
+using Photon.Pun;
 
 namespace SnakeGame
 {
@@ -11,6 +12,7 @@ namespace SnakeGame
         #region Variables
 
         [SerializeField] private MoveDirection m_direction;
+
         [SerializeField] private List<Rigidbody> snakeNodes;
         [SerializeField] private GameObject snakeNodePrefab;
         [SerializeField] private float step_Length = 0.2f;
@@ -18,16 +20,11 @@ namespace SnakeGame
         [SerializeField] private bool canMove = false;
         [SerializeField] private Rigidbody mainRigidbody;
         [SerializeField] private Rigidbody headRigidbody;
-        [SerializeField] private Photon.Pun.PhotonView photonView;
-
-        private Transform m_transform;
+        [SerializeField] private PhotonView photonView;
+        [SerializeField] private Transform m_transform;
         private List<Vector3> deltaPositions;
         private bool isSnakeCollectedFood = false;
-        private bool canCreateNewNodeAtrTail = false;
         private float counter = 0;
-
-        private const byte sizeOfTheSnakeNodesPool = 25;
-        private const string kSnakeNodesPool = "snakenodespool";
         #endregion Variables
 
         #region Unity Methods
@@ -70,8 +67,17 @@ namespace SnakeGame
             {
                 case "Wall":
                 case "Snake":
-                    Debug.LogError($"GAME_OVER");
+                    Debug.Log($"GAME_OVER");
                     GlobalEventHandler.TriggerEvent(EventID.EVENT_COLLIDED_TO_OBSTACLE);
+                    break;
+                case "Food":
+                    if (photonView.IsMine)
+                    {
+                        photonView.RPC("_OnFoodCollected", RpcTarget.All, m_transform.name);
+                        Debug.Log($"!!!Food Collected..");
+                    }
+                    GlobalEventHandler.TriggerEvent(EventID.EVENT_FOOD_COLLECTED);
+                    other.gameObject.SetActive(false);
                     break;
             }
         }
@@ -96,6 +102,7 @@ namespace SnakeGame
             if (snakeNodes == null || snakeNodes.Count <= 0)
                 for (int i = 0, count = m_transform.childCount; i < count; i++)
                     snakeNodes.Add(m_transform.GetChild(i).GetComponent<Rigidbody>());
+            m_transform.name += photonView.ViewID;
         }
         private void InitSnake()
         {
@@ -141,22 +148,22 @@ namespace SnakeGame
             }
             if (IsDirectionIsValid(dir))
             {
-                Debug.LogError($"curr: {m_direction} newDir: {dir} ");
+                Debug.Log($"curr: {m_direction} newDir: {dir} ");
                 m_direction = dir;
             }
         }
-        void ForceMove()
+
+        [PunRPC]
+        private void _OnFoodCollected(string name)
         {
-            counter = 0;
-            canMove = true;
-        }
-        private void OnFoodCollected()
-        {
-            GameObject snakeNode = Photon.Pun.PhotonNetwork.Instantiate(snakeNodePrefab.name, snakeNodes[snakeNodes.Count - 1].position, Quaternion.identity);
-            snakeNode.transform.SetParent(transform, true);
+            //if (!photonView.IsMine) return;
+            GameObject snakeNode = PhotonNetwork.InstantiateRoomObject(snakeNodePrefab.name, snakeNodes[snakeNodes.Count - 1].position, Quaternion.identity);
+            if (snakeNode == null) return;
+            snakeNode.GetComponent<PhotonView>().TransferOwnership(photonView.Owner);
+            snakeNode.transform.SetParent(GameObject.Find(name).transform, true);
             snakeNode.SetActive(true);
             snakeNodes.Add(snakeNode.GetComponent<Rigidbody>());
-            Debug.Log($"Added Node to the snake...");
+            Debug.Log($"!! Added Node to the snake...{snakeNodes.Count}");
         }
         private void MoveSnake()
         {
@@ -175,7 +182,7 @@ namespace SnakeGame
             if (isSnakeCollectedFood)
             {
                 isSnakeCollectedFood = false;
-                OnFoodCollected();
+                // _OnFoodCollected();
             }
         }
         private bool IsDirectionIsValid(MoveDirection newDirection)
@@ -187,6 +194,11 @@ namespace SnakeGame
         }
         private void CheckForFrequencyToMove()
         {
+            if (movementFrequency <= -1)
+            {
+                canMove = false;
+                return;
+            }
             counter += Time.deltaTime;
             if (counter >= movementFrequency)
             {
@@ -204,8 +216,10 @@ namespace SnakeGame
         }
         private void Callback_On_Snake_Collected_Food_Item(object args)
         {
+            // if (!photonView.IsMine) return;
             isSnakeCollectedFood = true;
         }
+
         #endregion Callbacks
 
 

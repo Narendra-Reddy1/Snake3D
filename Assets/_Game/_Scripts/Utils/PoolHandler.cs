@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using UnityEngine;
 using System;
+using Photon.Pun;
 
 public class PoolHandler : MonoBehaviour
 {
@@ -50,7 +51,21 @@ public class PoolHandler : MonoBehaviour
         mPools.Add(name, pool);
     }
 
-
+    //Created just for this snake task
+    public void CreatePoolOverNetworkForSceneObjects(string name, byte size, GameObject template, Transform parent, bool worldPositionStays = true)
+    {
+        List<GameObject> pool = new List<GameObject>();
+        GameObject currentObject;
+        for (int i = 0; i < size; i++)
+        {
+            currentObject = PhotonNetwork.InstantiateRoomObject(template.name, Vector3.zero, Quaternion.identity);
+            currentObject.name = template.name;
+            currentObject.transform.SetParent(parent, worldPositionStays);
+            currentObject.SetActive(false);
+            pool.Add(currentObject);
+        }
+        mPools.Add(name, pool);
+    }
     public void CreatePool(string name, byte size, GameObject template, Transform parent, bool worldPositionStays = true)
     {
         List<GameObject> pool = new List<GameObject>();
@@ -61,7 +76,6 @@ public class PoolHandler : MonoBehaviour
             currentObject.SetActive(false);
             pool.Add(currentObject);
         }
-
         mPools.Add(name, pool);
     }
     /// <summary>
@@ -71,7 +85,13 @@ public class PoolHandler : MonoBehaviour
     public void DestroyPool(string poolName)
     {
         if (mPools.ContainsKey(poolName))
+        {
+            foreach (GameObject go in mPools[poolName])
+            {
+                Destroy(go);
+            }
             mPools.Remove(poolName);
+        }
     }
 
     /// <summary>

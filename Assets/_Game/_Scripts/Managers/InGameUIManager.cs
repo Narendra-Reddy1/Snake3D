@@ -71,23 +71,22 @@ public class InGameUIManager : MonoBehaviour
         if (PhotonNetwork.IsMasterClient)
         {
             PhotonNetwork.MasterClient.AddScore(1);
-            m_masterScoretxt.SetText((PhotonNetwork.MasterClient.GetScore() + 1).ToString());
-            Debug.Log($"score: {PhotonNetwork.MasterClient.GetScore()}");
         }
         else
         {
             //If it doesn't work try getting all players list and removing master client
             PhotonNetwork.LocalPlayer.AddScore(1);
-            m_opponentScoretxt.SetText((PhotonNetwork.LocalPlayer.GetScore() + 1).ToString());
         }
     }
     private void Callback_On_Master_Properties_Updated(object args)
     {
-
+        m_masterScoretxt.SetText((PhotonNetwork.MasterClient.GetScore()).ToString());
     }
     private void Callback_On_Opponent_Player_Properties_Updated(object args)
     {
-
+        List<Player> playerList = PhotonNetwork.PlayerList.ToList();
+        playerList.Remove(PhotonNetwork.MasterClient);
+        m_opponentScoretxt.SetText(playerList[playerList.Count - 1].GetScore().ToString());
     }
 
     #endregion Private Methods

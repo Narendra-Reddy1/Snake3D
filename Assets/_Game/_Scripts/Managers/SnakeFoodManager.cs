@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using System.Threading;
@@ -47,13 +48,14 @@ namespace SnakeGame
 
         private void _Init()
         {
-            PoolHandler.instance.CreatePool(kStaticFoodPool, 3, m_foodPrefab, transform);
+
         }
         private void _SpawnFoodItem()
         {
+            // if (!Photon.Pun.PhotonNetwork.IsMasterClient) return;
             if (isFoodSpawned) return;
-            GameObject food = PoolHandler.instance.SpawnElementFromPool(kStaticFoodPool, m_foodPrefab.name);
-            food.transform.position = GetPositionForFood();
+            GameObject food = PhotonNetwork.InstantiateRoomObject(m_foodPrefab.name, GetPositionForFood(), Quaternion.identity);
+            if (food == null) return;
             isFoodSpawned = food != null;
             //yield return new WaitForSeconds(0.25f);
             food.SetActive(true);

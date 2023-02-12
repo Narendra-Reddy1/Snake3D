@@ -14,6 +14,7 @@ public class PlayerSpawnManager : MonoBehaviour
     #region Unity Methods
     private void Start()
     {
+        Photon.Pun.PhotonNetwork.AutomaticallySyncScene = true;
         SpawnPlayer();
     }
     #endregion Unity Methods
