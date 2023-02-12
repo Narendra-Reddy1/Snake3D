@@ -21,6 +21,7 @@ public class LobbyManager : MonoBehaviour
     #endregion Unity Methods
     private void OnEnable()
     {
+        ToggleLoadingScreen(!Photon.Pun.PhotonNetwork.IsConnected);
         GlobalEventHandler.AddListener(EventID.EVENT_PHOTON_CONNECTED_TO_MASTER_SERVER, Callback_On_Connected_To_Master);
         GlobalEventHandler.AddListener(EventID.EVENT_ON_TOGGLE_WAITING_FOR_PLAYERS_PANEL, Callback_On_Waiting_For_Players_Panel_Toggle_Requested);
     }
@@ -79,22 +80,23 @@ public class LobbyManager : MonoBehaviour
     }
     #endregion Private Methods
 
+    #region Loading Screen
+
+    private void ToggleLoadingScreen(bool value)
+    {
+        loadinScreen.SetActive(value);
+    }
+    #endregion Loading Screen
+
     #region Callbacks
     private void Callback_On_Waiting_For_Players_Panel_Toggle_Requested(object args)
     {
         ToggleWaitingForOtherPlayersPanel((bool)args);
     }
-    #endregion Callbacks
-
-    #region Loading Screen
-
-    private void HideLoadingScreen()
-    {
-        loadinScreen.SetActive(false);
-    }
     private void Callback_On_Connected_To_Master(object args)
     {
-        HideLoadingScreen();
+        ToggleLoadingScreen(false);
     }
-    #endregion Loading Screen
+    #endregion Callbacks
+
 }

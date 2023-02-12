@@ -4,6 +4,7 @@ using UnityEngine;
 using SnakeGame.Enums;
 using System;
 using Photon.Pun;
+using UnityEngine.SceneManagement;
 
 namespace SnakeGame
 {
@@ -66,8 +67,49 @@ namespace SnakeGame
             switch (other.tag)
             {
                 case "Wall":
+                    movementFrequency = -1;
+#if UNITY_ANDROID
+                    if (GlobalVariables.currentGameMode == GameMode.SinglePlayer)
+                    {
+                        GlobalEventHandler.TriggerEvent(EventID.REQUEST_NATIVE_ANDROID_ALERT, new NativeAlertProperties("GAME OVER", "Obstacle Hit!!", onCancel: () =>
+                        {
+                            PhotonNetwork.LeaveRoom();
+                            SceneManager.LoadSceneAsync(Constants.LOBBY_SCENE);
+                        }));
+                    }
+                    else
+                    {
+                        GlobalEventHandler.TriggerEvent(EventID.REQUEST_NATIVE_ANDROID_ALERT, new NativeAlertProperties(photonView.IsMine ? "YOU LOST" : "YOU WIN", photonView.IsMine ? "You Hit Obstacle!!" : "Opponent hit obstacle!!", onCancel: () =>
+                                {
+                                    PhotonNetwork.LeaveRoom();
+                                    SceneManager.LoadSceneAsync(Constants.LOBBY_SCENE);
+                                }));
+
+                    }
+#endif
+                    GlobalEventHandler.TriggerEvent(EventID.EVENT_COLLIDED_TO_OBSTACLE);
+                    break;
                 case "Snake":
-                    Debug.Log($"GAME_OVER");
+                    movementFrequency = -1;
+#if UNITY_ANDROID
+                    if (GlobalVariables.currentGameMode == GameMode.SinglePlayer)
+                    {
+                        GlobalEventHandler.TriggerEvent(EventID.REQUEST_NATIVE_ANDROID_ALERT, new NativeAlertProperties("GAME OVER", "You ate yourself!!", onCancel: () =>
+                        {
+                            PhotonNetwork.LeaveRoom();
+                            SceneManager.LoadSceneAsync(Constants.LOBBY_SCENE);
+                        }));
+                    }
+                    else
+                    {
+                        GlobalEventHandler.TriggerEvent(EventID.REQUEST_NATIVE_ANDROID_ALERT, new NativeAlertProperties(photonView.IsMine ? "YOU LOST" : "YOU WIN", photonView.IsMine ? "You ate yourself!!" : "Opponent snake ate itself!!", onCancel: () =>
+                        {
+                            PhotonNetwork.LeaveRoom();
+                            SceneManager.LoadSceneAsync(Constants.LOBBY_SCENE);
+                        }));
+
+                    }
+#endif
                     GlobalEventHandler.TriggerEvent(EventID.EVENT_COLLIDED_TO_OBSTACLE);
                     break;
                 case "Food":
