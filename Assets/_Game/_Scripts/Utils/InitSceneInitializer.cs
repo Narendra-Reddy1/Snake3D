@@ -13,7 +13,7 @@ public class InitSceneInitializer : MonoBehaviour
         handle.completed += (op) =>
         {
             op.allowSceneActivation = true;
-            Debug.Log($"Loaded PersistentScene");
+            Debug.Log($"Loaded Lobby");
             SceneManager.UnloadSceneAsync(Constants.INIT_SCENE);
             GlobalEventHandler.TriggerEvent(EventID.REQUEST_PHOTON_TO_CONNECT_MASTER_SERVER);
         };

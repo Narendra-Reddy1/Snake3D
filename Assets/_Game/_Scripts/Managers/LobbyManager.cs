@@ -21,7 +21,7 @@ public class LobbyManager : MonoBehaviour
     #endregion Unity Methods
     private void OnEnable()
     {
-        ToggleLoadingScreen(!Photon.Pun.PhotonNetwork.IsConnected);
+        ToggleLoadingScreen(!Photon.Pun.PhotonNetwork.IsConnectedAndReady);
         GlobalEventHandler.AddListener(EventID.EVENT_PHOTON_CONNECTED_TO_MASTER_SERVER, Callback_On_Connected_To_Master);
         GlobalEventHandler.AddListener(EventID.EVENT_ON_TOGGLE_WAITING_FOR_PLAYERS_PANEL, Callback_On_Waiting_For_Players_Panel_Toggle_Requested);
     }
@@ -35,6 +35,8 @@ public class LobbyManager : MonoBehaviour
     {
         RoomOptions options = new RoomOptions();
         options.MaxPlayers = 1;
+        options.IsVisible = true;
+        options.IsOpen = true;
         GlobalEventHandler.TriggerEvent(EventID.REQUEST_PHOTON_TO_CREATE_ROOM, new CreateRoomSettings(Random.Range(999, 9999).ToString(), options));
     }
     public void OnClickMultiplayerBtn()
@@ -51,6 +53,8 @@ public class LobbyManager : MonoBehaviour
         }
         RoomOptions options = new RoomOptions();
         options.MaxPlayers = Constants.MAX_PLAYERS_PER_ROOM;
+        options.IsVisible = true;
+        options.IsOpen = true;
         GlobalEventHandler.TriggerEvent(EventID.REQUEST_PHOTON_TO_CREATE_ROOM, new CreateRoomSettings(m_roomIdInputField.text, options));
     }
     public void OnClickJoinRoomBtn()

@@ -41,11 +41,13 @@ namespace SnakeGame
         {
             GlobalEventHandler.AddListener(EventID.EVENT_ON_SWIPE_DETECTED, Callback_On_Swipe_Detected);
             GlobalEventHandler.AddListener(EventID.EVENT_FOOD_COLLECTED, Callback_On_Snake_Collected_Food_Item);
+            GlobalEventHandler.AddListener(EventID.EVENT_ON_LEVEL_TIMER_COMPLETE, Callback_On_Level_Timer_Completed);
         }
         private void OnDisable()
         {
             GlobalEventHandler.RemoveListener(EventID.EVENT_ON_SWIPE_DETECTED, Callback_On_Swipe_Detected);
             GlobalEventHandler.RemoveListener(EventID.EVENT_FOOD_COLLECTED, Callback_On_Snake_Collected_Food_Item);
+            GlobalEventHandler.RemoveListener(EventID.EVENT_ON_LEVEL_TIMER_COMPLETE, Callback_On_Level_Timer_Completed);
         }
         private void Update()
         {
@@ -67,38 +69,39 @@ namespace SnakeGame
             switch (other.tag)
             {
                 case "Wall":
+
                     movementFrequency = -1;
-#if UNITY_ANDROID
+
                     if (GlobalVariables.currentGameMode == GameMode.SinglePlayer)
                     {
                         GlobalEventHandler.TriggerEvent(EventID.REQUEST_NATIVE_ANDROID_ALERT, new NativeAlertProperties("GAME OVER", "Obstacle Hit!!", onCancel: () =>
-                        {
-                            PhotonNetwork.LeaveRoom();
-                            SceneManager.LoadSceneAsync(Constants.LOBBY_SCENE);
-                        }));
+                          {
+                              PhotonNetwork.LeaveRoom();
+                              SceneManager.LoadSceneAsync(Constants.LOBBY_SCENE);
+                          }));
                     }
                     else
                     {
                         GlobalEventHandler.TriggerEvent(EventID.REQUEST_NATIVE_ANDROID_ALERT, new NativeAlertProperties(photonView.IsMine ? "YOU LOST" : "YOU WIN", photonView.IsMine ? "You Hit Obstacle!!" : "Opponent hit obstacle!!", onCancel: () =>
-                                {
-                                    PhotonNetwork.LeaveRoom();
-                                    SceneManager.LoadSceneAsync(Constants.LOBBY_SCENE);
-                                }));
+                                  {
+                                      PhotonNetwork.LeaveRoom();
+                                      SceneManager.LoadSceneAsync(Constants.LOBBY_SCENE);
+                                  }));
 
                     }
-#endif
+
                     GlobalEventHandler.TriggerEvent(EventID.EVENT_COLLIDED_TO_OBSTACLE);
                     break;
                 case "Snake":
+
                     movementFrequency = -1;
-#if UNITY_ANDROID
                     if (GlobalVariables.currentGameMode == GameMode.SinglePlayer)
                     {
                         GlobalEventHandler.TriggerEvent(EventID.REQUEST_NATIVE_ANDROID_ALERT, new NativeAlertProperties("GAME OVER", "You ate yourself!!", onCancel: () =>
-                        {
-                            PhotonNetwork.LeaveRoom();
-                            SceneManager.LoadSceneAsync(Constants.LOBBY_SCENE);
-                        }));
+                         {
+                             PhotonNetwork.LeaveRoom();
+                             SceneManager.LoadSceneAsync(Constants.LOBBY_SCENE);
+                         }));
                     }
                     else
                     {
@@ -109,13 +112,12 @@ namespace SnakeGame
                         }));
 
                     }
-#endif
                     GlobalEventHandler.TriggerEvent(EventID.EVENT_COLLIDED_TO_OBSTACLE);
                     break;
                 case "Food":
-                    if (photonView.IsMine)
+                    if (photonView.Owner.IsLocal)
                     {
-                        photonView.RPC("_OnFoodCollected", RpcTarget.All, m_transform.name);
+                        _OnFoodCollected();
                         Debug.Log($"!!!Food Collected..");
                     }
                     GlobalEventHandler.TriggerEvent(EventID.EVENT_FOOD_COLLECTED);
@@ -130,6 +132,11 @@ namespace SnakeGame
         #endregion Public Methods
 
         #region Private Methods
+        [PunRPC]
+        private void SendRequestForNativeAlert(NativeAlertProperties properties)
+        {
+            GlobalEventHandler.TriggerEvent(EventID.REQUEST_NATIVE_ANDROID_ALERT, properties);
+        }
         private void _Init()
         {
             m_transform = transform;
@@ -195,15 +202,17 @@ namespace SnakeGame
             }
         }
 
-        [PunRPC]
-        private void _OnFoodCollected(string name)
+        // [PunRPC]
+        private void _OnFoodCollected()
         {
-            //if (!photonView.IsMine) return;
-            GameObject snakeNode = PhotonNetwork.InstantiateRoomObject(snakeNodePrefab.name, snakeNodes[snakeNodes.Count - 1].position, Quaternion.identity);
+            if (!photonView.IsMine) return;
+            GameObject snakeNode = PhotonNetwork.Instantiate(snakeNodePrefab.name, snakeNodes[snakeNodes.Count - 1].position, Quaternion.identity);
             if (snakeNode == null) return;
-            snakeNode.GetComponent<PhotonView>().TransferOwnership(photonView.Owner);
-            snakeNode.transform.SetParent(GameObject.Find(name).transform, true);
+            // snakeNode.GetComponent<PhotonView>().TransferOwnership(photonView.Owner);
+            snakeNode.transform.SetParent(m_transform, true);
             snakeNode.SetActive(true);
+            //photonViews.Add(snakeNode.GetComponent<PhotonView>());
+            // photonView.RPC("UpdateRigidbodyList", RpcTarget.AllBuffered);
             snakeNodes.Add(snakeNode.GetComponent<Rigidbody>());
             Debug.Log($"!! Added Node to the snake...{snakeNodes.Count}");
         }
@@ -221,11 +230,11 @@ namespace SnakeGame
                 parentpostion = prevPosition;
             }
             //SnakeGrowing Logic here
-            if (isSnakeCollectedFood)
-            {
-                isSnakeCollectedFood = false;
-                // _OnFoodCollected();
-            }
+            //if (isSnakeCollectedFood)
+            //{
+            //    isSnakeCollectedFood = false;
+            //     _OnFoodCollected();
+            //}
         }
         private bool IsDirectionIsValid(MoveDirection newDirection)
         {
@@ -260,6 +269,11 @@ namespace SnakeGame
         {
             // if (!photonView.IsMine) return;
             isSnakeCollectedFood = true;
+        }
+
+        private void Callback_On_Level_Timer_Completed(object args)
+        {
+            movementFrequency = -1;
         }
 
         #endregion Callbacks

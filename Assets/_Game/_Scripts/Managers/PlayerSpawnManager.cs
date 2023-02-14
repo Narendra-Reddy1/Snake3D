@@ -1,3 +1,4 @@
+using Photon.Pun;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -9,12 +10,13 @@ public class PlayerSpawnManager : MonoBehaviour
     [SerializeField] private Transform masterClientSpawnPoint;
     [SerializeField] private Transform newPlayerSpawnPoint;
 
+    private bool isPlayerInstantiated = false;
     #endregion Variables
 
     #region Unity Methods
     private void Start()
     {
-        Photon.Pun.PhotonNetwork.AutomaticallySyncScene = true;
+        //PhotonNetwork.AutomaticallySyncScene = true;
         SpawnPlayer();
     }
     #endregion Unity Methods
@@ -22,10 +24,9 @@ public class PlayerSpawnManager : MonoBehaviour
     #region Public Methods
     public void SpawnPlayer()
     {
-        if (Photon.Pun.PhotonNetwork.IsMasterClient)
-            Photon.Pun.PhotonNetwork.Instantiate(snakePrefab.name, masterClientSpawnPoint.position, Quaternion.identity);
-        else
-            Photon.Pun.PhotonNetwork.Instantiate(snakePrefab.name, newPlayerSpawnPoint.position, Quaternion.identity);
+        if (isPlayerInstantiated) return;
+        PhotonNetwork.Instantiate(snakePrefab.name, PhotonNetwork.IsMasterClient ? masterClientSpawnPoint.position : newPlayerSpawnPoint.position, Quaternion.identity);
+        isPlayerInstantiated = true;
     }
     #endregion Public Methods
 

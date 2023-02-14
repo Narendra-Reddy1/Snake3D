@@ -6,6 +6,7 @@ using SnakeGame.Enums;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using Photon.Pun.UtilityScripts;
+using System;
 
 public class PhotonNetworkWrapper : MonoBehaviourPunCallbacks
 {
@@ -18,6 +19,7 @@ public class PhotonNetworkWrapper : MonoBehaviourPunCallbacks
     public override void OnEnable()
     {
         base.OnEnable();
+        PhotonNetwork.NetworkingClient.EventReceived += OnEvent;
         GlobalEventHandler.AddListener(EventID.REQUEST_PHOTON_TO_CONNECT_MASTER_SERVER, Callback_On_Connect_To_Master_Requested);
         GlobalEventHandler.AddListener(EventID.REQUEST_PHOTON_TO_CREATE_ROOM, Callback_On_Create_Room_Requested);
         GlobalEventHandler.AddListener(EventID.REQUEST_PHOTON_TO_JOIN_ROOM, Callback_On_Join_Room_Requested);
@@ -26,6 +28,7 @@ public class PhotonNetworkWrapper : MonoBehaviourPunCallbacks
     public override void OnDisable()
     {
         base.OnDisable();
+        PhotonNetwork.NetworkingClient.EventReceived -= OnEvent;
         GlobalEventHandler.RemoveListener(EventID.REQUEST_PHOTON_TO_CONNECT_MASTER_SERVER, Callback_On_Connect_To_Master_Requested);
         GlobalEventHandler.RemoveListener(EventID.REQUEST_PHOTON_TO_CREATE_ROOM, Callback_On_Create_Room_Requested);
         GlobalEventHandler.RemoveListener(EventID.REQUEST_PHOTON_TO_JOIN_ROOM, Callback_On_Join_Room_Requested);
@@ -68,6 +71,8 @@ public class PhotonNetworkWrapper : MonoBehaviourPunCallbacks
         {
             case GameMode.SinglePlayer:
             case GameMode.MultiPlayer:
+                if (!newPlayer.IsLocal)
+                    GlobalVariables.opponentPlayer = newPlayer;
                 CheckForMinimumPlayersToStartGame();
                 break;
         }
@@ -83,10 +88,15 @@ public class PhotonNetworkWrapper : MonoBehaviourPunCallbacks
     public override void OnPlayerPropertiesUpdate(Player targetPlayer, Hashtable changedProps)
     {
         base.OnPlayerPropertiesUpdate(targetPlayer, changedProps);
-        if (targetPlayer.IsMasterClient)
-            GlobalEventHandler.TriggerEvent(EventID.EVENT_ON_MASTER_CLIENT_PROPERTIES_UPDATED, changedProps);
-        else
-            GlobalEventHandler.TriggerEvent(EventID.EVENT_ON_OPPONENT_PLAYER_PROPERTIES_UPDATED, changedProps);
+        //if (targetPlayer.IsMasterClient)
+        GlobalEventHandler.TriggerEvent(EventID.EVENT_ON_PLAYER_PROPERTIES_UPDATED, targetPlayer);
+
+        //else
+        //  GlobalEventHandler.TriggerEvent(EventID.EVENT_ON_OPPONENT_PLAYER_PROPERTIES_UPDATED, new Tuple<Player, Hashtable>(targetPlayer, changedProps));
+    }
+    public static void RaiseEvent(EventCodes eventCode, object eventContent, ReceiverGroup receiverGroup)
+    {
+        PhotonNetwork.RaiseEvent((byte)eventCode, eventContent, new RaiseEventOptions() { Receivers = receiverGroup }, new SendOptions() { Reliability = true });
     }
     #endregion
 
@@ -120,6 +130,18 @@ public class PhotonNetworkWrapper : MonoBehaviourPunCallbacks
             //Show waiting for other players popup.....
         }
     }
+    private void OnEvent(EventData eventData)
+    {
+        EventCodes eventCode = (EventCodes)eventData.Code;
+        switch (eventCode)
+        {
+            case EventCodes.ON_FOOD_COLLECTED:
+                GlobalEventHandler.TriggerEvent(EventID.EVENT_FOOD_COLLECTED);
+                break;
+            default:
+                break;
+        }
+    }
     #endregion
 
     #region Callbacks
@@ -151,4 +173,9 @@ public struct CreateRoomSettings
         roomID = id;
         roomOptions = options;
     }
+}
+
+public enum EventCodes
+{
+    ON_FOOD_COLLECTED,
 }

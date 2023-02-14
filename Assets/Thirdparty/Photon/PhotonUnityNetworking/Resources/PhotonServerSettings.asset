@@ -41,6 +41,9 @@ MonoBehaviour:
   - RespawnSpaceship
   - OnFoodCollected
   - _OnFoodCollected
+  - UpdateRigidbodyList
+  - UpdateToUI
+  - SendRequestForNativeAlert
   DisableAutoOpenWizard: 1
   ShowSettings: 1
   DevRegionSetOnce: 1

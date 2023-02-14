@@ -87,13 +87,13 @@ MonoBehaviour:
   - {fileID: 8079247928897525826}
   - {fileID: 646919310943933964}
   snakeNodePrefab: {fileID: 2381176447476436901, guid: f431a4090f5257642940b7be7c45d503, type: 3}
-  step_Length: 0.65
+  step_Length: 0.7
   movementFrequency: 0.3
   canMove: 0
   mainRigidbody: {fileID: 1821192559}
   headRigidbody: {fileID: 256101594122931456}
   photonView: {fileID: 3561859893861096076}
-  m_transform: {fileID: 0}
+  m_transform: {fileID: 256101595495173523}
 --- !u!114 &3561859893861096076
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -222,6 +222,22 @@ PrefabInstance:
       propertyPath: m_Name
       value: Snake_Node
       objectReference: {fileID: 0}
+    - target: {fileID: 3035952871387351202, guid: f431a4090f5257642940b7be7c45d503, type: 3}
+      propertyPath: m_Size.x
+      value: 0.90000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 3035952871387351202, guid: f431a4090f5257642940b7be7c45d503, type: 3}
+      propertyPath: m_Size.y
+      value: 0.90000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 3035952871387351202, guid: f431a4090f5257642940b7be7c45d503, type: 3}
+      propertyPath: m_Size.z
+      value: 0.68905383
+      objectReference: {fileID: 0}
+    - target: {fileID: 3035952871387351202, guid: f431a4090f5257642940b7be7c45d503, type: 3}
+      propertyPath: m_Center.z
+      value: -0.105473146
+      objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: f431a4090f5257642940b7be7c45d503, type: 3}
 --- !u!4 &2571304083928186590 stripped
@@ -244,6 +260,22 @@ PrefabInstance:
     - target: {fileID: 9104338629415709762, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
       propertyPath: m_Name
       value: Tail
+      objectReference: {fileID: 0}
+    - target: {fileID: 9104338629415709773, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
+      propertyPath: m_Size.x
+      value: 0.90000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 9104338629415709773, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
+      propertyPath: m_Size.y
+      value: 0.90000004
+      objectReference: {fileID: 0}
+    - target: {fileID: 9104338629415709773, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
+      propertyPath: m_Size.z
+      value: 0.71567273
+      objectReference: {fileID: 0}
+    - target: {fileID: 9104338629415709773, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
+      propertyPath: m_Center.z
+      value: -0.09216358
       objectReference: {fileID: 0}
     - target: {fileID: 9104338629415709774, guid: 3be850ee28d4d2b4baae434bcdc38a05, type: 3}
       propertyPath: m_RootOrder
